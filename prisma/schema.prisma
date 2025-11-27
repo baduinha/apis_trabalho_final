@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Carro {
+  id          Int          @id @default(autoincrement())
+  modelo      String       @db.VarChar(40)
+  marca       String       @db.VarChar(30)
+  ano         Int          @db.Int
+  combustivel Combustiveis @default(FLEX)
+  preco       Float        @db.Float
+  vendido     Boolean      @default(false)
+  estoque     Int          @default(1)
+  venda_carro vendaCarro[]
+
+  @@map("carros")
+}
+
+enum Combustiveis {
+  FLEX
+  GASOLINA
+  ALCOOL
+  DIESEL
+  ELETRICO
+}
+
+model Comprador {
+  id          Int          @id @default(autoincrement())
+  nome        String       @db.VarChar(40)
+  cnh         String       @unique @db.VarChar(14)
+  email       String       @unique @db.VarChar(50)
+  endereco    String       @db.VarChar(100)
+  telefone    String       @db.VarChar(15)
+  venda_carro vendaCarro[]
+
+  @@map("compradores")
+}
+
+model vendaCarro {
+  id          Int      @id @default(autoincrement())
+  carroId     Int
+  compradorId Int
+  data_venda  DateTime @default(now()) @db.Timestamp(6)
+  valor       Float    @db.Float @map("valor_venda")
+
+  carro     Carro     @relation(fields: [carroId], references: [id])
+  comprador Comprador @relation(fields: [compradorId], references: [id])
+
+  @@map("venda_carros")
+}
