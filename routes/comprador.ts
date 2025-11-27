@@ -2,6 +2,7 @@ import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 import nodemailer from "nodemailer";
+import { autenticaMiddleware } from "./autenticaMiddleware.js";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -29,7 +30,7 @@ const transporter = nodemailer.createTransport({
 // ---------------- ROTAS ----------------
 
 // GET /comprador - lista todos os compradores
-router.get("/", async (req, res) => {
+router.get("/", autenticaMiddleware, async (req, res) => {
   try {
     const compradores = await prisma.comprador.findMany();
     res.status(200).json(compradores);

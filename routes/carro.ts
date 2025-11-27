@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { PrismaClient, Combustiveis } from "@prisma/client";
-import { z } from "zod";
+import { string, z } from "zod";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -23,7 +23,7 @@ const filtroSchema = z.object({
   combustivel: z.enum(Combustiveis).optional(),
 });
 
-// ----------------- ROTAS -----------------
+// ----------------- ROTAS ----------------- //
 
 // ✅ GET /carro/disponiveis → retorna carros ainda disponíveis para venda
 router.get("/disponiveis", async (req, res) => {
@@ -51,6 +51,10 @@ router.get('/', async (req, res) => {
   try {
     const { marca, ano, combustivel } = req.query;
 
+    // 🙅‍♂️🙅‍♂️🙅‍♂️🙅‍♂️ RECURSOS DE PAGINAÇÃO 🙅‍♂️🙅‍♂️🙅‍♂️🙅‍♂️
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
     const filtros: any = {};
 
     if (marca) {
@@ -66,7 +70,9 @@ router.get('/', async (req, res) => {
     }
 
     const carros = await prisma.carro.findMany({
-      where: filtros
+      where: filtros,
+      skip,
+      take: limit
     });
 
     res.status(200).json(carros);
@@ -88,7 +94,7 @@ router.post("/", async (req, res) => {
 
   try {
     const carro = await prisma.carro.create({
-      data: { modelo, marca, ano, combustivel, preco, estoque, vendido },
+      data: { modelo, marca, ano, combustivel, preco, estoque, vendido, usuarioId: Number(req.body.usuarioId) },
     });
     res.status(201).json(carro);
   } catch (error) {
