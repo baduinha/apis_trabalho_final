@@ -17,6 +17,8 @@ model Carro {
   vendido     Boolean      @default(false)
   estoque     Int          @default(1)
   venda_carro vendaCarro[]
+  usuarioId   Int
+  usuario     Usuario      @relation(fields: [usuarioId], references: [id])
 
   @@map("carros")
 }
@@ -46,10 +48,18 @@ model vendaCarro {
   carroId     Int
   compradorId Int
   data_venda  DateTime @default(now()) @db.Timestamp(6)
-  valor       Float    @db.Float @map("valor_venda")
+  valor       Float    @map("valor_venda") @db.Float
 
   carro     Carro     @relation(fields: [carroId], references: [id])
   comprador Comprador @relation(fields: [compradorId], references: [id])
+}
 
-  @@map("venda_carros")
+ model Usuario {
+  id       Int     @id @default(autoincrement())
+  nome     String  @db.VarChar(40)
+  email    String  @unique @db.VarChar(50)
+  senha    String  @db.VarChar(100)
+  createdAt DateTime @default(now())
+  carros   Carro[]
+
 }
