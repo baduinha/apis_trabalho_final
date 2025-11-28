@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { PrismaClient, Combustiveis } from "@prisma/client";
 import { string, z } from "zod";
+import { autenticaMiddleware } from "./autenticaMiddleware";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -84,7 +85,7 @@ router.get('/', async (req, res) => {
 });
 
 // ✅ POST /carro - Adiciona um carro
-router.post("/", async (req, res) => {
+router.post("/", autenticaMiddleware, async (req, res) => {
   const result = carroSchema.safeParse(req.body);
   if (!result.success) {
     return res.status(400).json({ erro: result.error.issues });
