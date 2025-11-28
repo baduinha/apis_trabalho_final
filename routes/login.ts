@@ -29,6 +29,14 @@ router.post("/", async (req, res) => {
     if (!senhaValida) {
       return res.status(401).json({ erro: "Senha inválida" });
     }
+    // Guarda a última data de login ANTES de atualizar
+    const ultimoAcessoAnterior = usuario.ultimoLogin;
+
+    // Atualiza o campo de último login
+    await prisma.usuario.update({
+      where: { id: usuario.id },
+      data: { ultimoLogin: new Date() }
+    });
 
     // Gera token JWT
     const token = jwt.sign(
@@ -37,6 +45,15 @@ router.post("/", async (req, res) => {
       { expiresIn: "1d" }
     );
 
+    // Resposta diferenciada
+    let mensagemAcesso = "";
+
+    if (!ultimoAcessoAnterior) {
+      mensagemAcesso = "Este é o seu primeiro acesso ao sistema.";
+    } else {
+      mensagemAcesso = `Seu último acesso foi em: ${ultimoAcessoAnterior.toLocaleString("pt-BR")}`;
+    }
+    
     // REGISTRA LOG DE LOGIN
     await registrarLog(usuario.id, "Login realizado");
 

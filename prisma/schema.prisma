@@ -60,6 +60,7 @@ model vendaCarro {
   email    String  @unique @db.VarChar(50)
   senha    String  @db.VarChar(100)
   createdAt DateTime @default(now())
+  ultimoLogin DateTime?
   carros   Carro[]
   logs     log[]
 
