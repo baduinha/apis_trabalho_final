@@ -53,11 +53,16 @@ router.post("/", async (req, res) => {
     } else {
       mensagemAcesso = `Seu último acesso foi em: ${ultimoAcessoAnterior.toLocaleString("pt-BR")}`;
     }
-    
+
     // REGISTRA LOG DE LOGIN
     await registrarLog(usuario.id, "Login realizado");
 
-    return res.json({ token });
+    return res.json({
+       mensagem: `Bem Vindo, ${usuario.nome}!`,
+       info: mensagemAcesso,
+       token
+      
+      });
   } catch (erro: any) {
     return res.status(500).json({ erro: erro.message });
   }
