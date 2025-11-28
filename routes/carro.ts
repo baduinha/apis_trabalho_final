@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { PrismaClient, Combustiveis } from "@prisma/client";
 import { string, z } from "zod";
-import { autenticaMiddleware } from "./autenticaMiddleware";
+import { autenticaMiddleware } from "./autenticaMiddleware.js";
 
 const router = Router();
 const prisma = new PrismaClient();
